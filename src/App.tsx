@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
@@ -17,7 +17,6 @@ import { setTodos } from './features/todos';
 export const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const todos = useAppSelector(state => state.todos);
-  // const [todos, setTodos] = useState<Todo[]>([]);
   const [todosLoading, setTodosLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
@@ -26,7 +25,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const loadAllTodos = () => {
+  const loadAllTodos = useCallback(() => {
     setTodosLoading(true);
     setError(null);
 
@@ -34,11 +33,11 @@ export const App: React.FC = () => {
       .then(data => dispatch(setTodos(data)))
       .catch(() => setError('Failed to load todos:'))
       .finally(() => setTodosLoading(false));
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     loadAllTodos();
-  }, []);
+  }, [loadAllTodos]);
 
   useEffect(() => {
     if (selectedTodo) {
