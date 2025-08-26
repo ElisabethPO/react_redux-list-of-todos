@@ -13,16 +13,19 @@ import { User } from './types/User';
 
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { setTodos } from './features/todos';
+import { setQuery, setStatus } from './features/filter';
+import { selectFilteredTodos } from './features/selectors';
 
 export const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  const todos = useAppSelector(state => state.todos);
+  const filter = useAppSelector(state => state.filter.status);
+  const query = useAppSelector(state => state.filter.query);
+  const todos = useAppSelector(selectFilteredTodos);
+
   const [todosLoading, setTodosLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [filter, setFilter] = useState<'all' | 'completed' | 'active'>('all');
-  const [query, setQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const loadAllTodos = useCallback(() => {
@@ -51,24 +54,6 @@ export const App: React.FC = () => {
     }
   }, [selectedTodo]);
 
-  const filteredTodos = todos
-    .filter(todo => {
-      if (filter === 'all') {
-        return true;
-      }
-
-      if (filter === 'completed') {
-        return todo.completed;
-      }
-
-      if (filter === 'active') {
-        return !todo.completed;
-      }
-
-      return false;
-    })
-    .filter(todo => todo.title.toLowerCase().includes(query.toLowerCase()));
-
   return (
     <>
       <div className="section">
@@ -84,19 +69,19 @@ export const App: React.FC = () => {
               )}
               <TodoFilter
                 filter={filter}
-                onChangeFilter={setFilter}
+                onChangeFilter={status => dispatch(setStatus(status))}
                 query={query}
-                onChangeQuery={setQuery}
-                onClearQuery={() => setQuery('')}
+                onChangeQuery={q => dispatch(setQuery(q))}
+                onClearQuery={() => dispatch(setQuery(''))}
               />
             </div>
 
-            <div className="block">
+            <div className="block" data-cy="todos-container">
               {todosLoading ? (
-                <Loader />
+                <Loader data-cy="loader" />
               ) : (
                 <TodoList
-                  todos={filteredTodos}
+                  todos={todos}
                   selectedTodo={selectedTodo}
                   onSelect={setSelectedTodo}
                 />

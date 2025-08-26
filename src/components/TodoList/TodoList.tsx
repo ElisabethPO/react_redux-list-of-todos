@@ -48,7 +48,7 @@ export const TodoList: React.FC<Props> = ({
               <td className="is-vcentered is-expanded">
                 <p
                   className={
-                    todo.completed ? 'has-text-sucess' : 'has-text-danger'
+                    todo.completed ? 'has-text-success' : 'has-text-danger'
                   }
                 >
                   {todo.title}
@@ -68,7 +68,6 @@ export const TodoList: React.FC<Props> = ({
                   }}
                 >
                   <span className="icon">
-                    {/* <i className={isSelected ? 'far fa-slash' : 'far fa-eye'} /> */}
                     <i
                       className={`fas ${isSelected ? 'fa-eye-slash' : 'fa-eye'}`}
                     />
